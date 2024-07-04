@@ -15,9 +15,18 @@ export class Database {
       .catch(() => this.#persist())
   }
 
-  select(table) {
-    let data = this.#database[table] ?? []
-    return data
+  select(table, id) {
+    if (!id) {
+      const data = this.#database[table] ?? []
+      return data
+    }
+
+    const rowIndex = this.#database[table].findIndex(row => row.id === id)
+    if (rowIndex > -1) {
+      return this.#database[table][rowIndex]
+    }
+
+    return []
   }
 
   insert(table, data) {
@@ -44,7 +53,7 @@ export class Database {
     if (rowIndex > -1) {
       const rowData = this.#database[table][rowIndex]
       for (const key in data) {
-        if (data[key]) rowData[key] = data[key]
+        if (data[key] !== undefined) rowData[key] = data[key]
       }
 
       this.#persist()
