@@ -8,10 +8,18 @@ const server = http.createServer(async (req, res) => {
   await json(req, res)
 
   const route = routes.find((route) => {
-    return route.method === method && route.path === url
+    return route.method === method && route.path.test(url)
   })
 
-  if (route) return route.handler(req, res)
+  if (route) {
+    const routeParams = req.url.match(route.path)
+
+    const { ...params } = routeParams.groups
+
+    req.params = params
+
+    return route.handler(req, res)
+  }
 
   return res.writeHead(401).end('Not Found')
 })
