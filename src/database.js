@@ -15,9 +15,19 @@ export class Database {
       .catch(() => this.#persist())
   }
 
-  select(table, id) {
+  select(table, id, search) {
     if (!id) {
-      const data = this.#database[table] ?? []
+      let data = this.#database[table] ?? []
+
+      if (search) {
+        data = data.filter(row => {
+          return Object.entries(search).some(([key, value]) => {
+            return row[key].toLowerCase().includes(value.toLowerCase())
+          })
+        })
+        console.log(data)
+      }
+
       return data
     }
 
