@@ -46,9 +46,15 @@ export const routes = [
       const { id } = req.params
       const { title, description } = req.body
 
+      if (!title && !description) {
+        return res.writeHead(404).end('Title or Description must be send')
+      }
+
       const updatedAt = new Date()
 
-      if (!id) return res.writeHead(404).end('ID not found')
+      if (!database.select('tasks', id).id) {
+        return res.writeHead(404).end('ID not found')
+      }
 
       database.update('tasks', id, { title, description, updatedAt })
 
@@ -61,7 +67,14 @@ export const routes = [
     path: buildRoutePath('/tasks/:id/complete'),
     handler: (req, res) => {
       const { id } = req.params
-      if (!id) return res.writeHead(404).end('ID not found')
+
+      if (!database.select('tasks', id).id) {
+        return res.writeHead(404).end('ID not found')
+      }
+
+      if (!title && !description) {
+        return res.writeHead(404).end('Title or Description must be send')
+      }
 
       let completedAt = database.select('tasks', id).completedAt
 
@@ -82,7 +95,9 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params
 
-      if (!id) return res.writeHead(404).end('ID not found')
+      if (!database.select('tasks', id).id) {
+        return res.writeHead(404).end('ID not found')
+      }
 
       database.delete('tasks', id)
 
