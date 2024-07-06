@@ -1,6 +1,7 @@
 import { Database } from "./database.js"
 import { randomUUID } from 'node:crypto'
 import { buildRoutePath } from "./utils/build-route-path.js"
+import { title } from "node:process"
 
 export const database = new Database
 
@@ -9,7 +10,13 @@ export const routes = [
     method: 'GET',
     path: buildRoutePath('/tasks'),
     handler: (req, res) => {
-      const tasks = database.select('tasks')
+
+      const { search } = req.query
+
+      const tasks = database.select('tasks', 0, {
+        title: search,
+        description: search
+      })
       return res.end(JSON.stringify(tasks))
     }
   },
